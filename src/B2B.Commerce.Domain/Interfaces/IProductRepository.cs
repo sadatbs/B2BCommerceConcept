@@ -11,4 +11,5 @@ public interface IProductRepository
     Task UpdateAsync(Product product, CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
     Task<bool> SkuExistsAsync(string sku, CancellationToken cancellationToken = default);
+    Task<(IReadOnlyList<Product> Items, int TotalCount)> GetPagedAsync(int skip, int take, CancellationToken cancellationToken = default);
 }

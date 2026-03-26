@@ -9,11 +9,14 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\B2B.Commerce.Domain\B2B.Commerce.Domain.csproj" />
     <ProjectReference Include="..\B2B.Commerce.Infrastructure\B2B.Commerce.Infrastructure.csproj" />
+    <ProjectReference Include="..\B2B.Commerce.Contracts\B2B.Commerce.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
