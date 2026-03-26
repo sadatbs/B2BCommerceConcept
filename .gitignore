@@ -1,0 +1,29 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.vscode/
+*.swp
+
+## NuGet
+*.nupkg
+packages/
+.nuget/
+
+## EF Core migrations (keep migrations, ignore snapshots if needed)
+# Uncomment below to ignore migration snapshots
+# **/Migrations/*Snapshot.cs
+
+## Environment / secrets
+appsettings.*.json
+!appsettings.Development.json
+.env
+
+## Docker volumes (not tracked)
+pgdata/
+
+## OS
+.DS_Store
+Thumbs.db
