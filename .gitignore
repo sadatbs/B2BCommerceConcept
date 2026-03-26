@@ -24,6 +24,10 @@ appsettings.*.json
 ## Docker volumes (not tracked)
 pgdata/
 
+## Claude Code internals — keep briefs, ignore everything else
+.claude/*
+!.claude/briefs/
+
 ## OS
 .DS_Store
 Thumbs.db
