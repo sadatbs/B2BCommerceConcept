@@ -45,16 +45,26 @@ B2B.Commerce.Domain         # No external dependencies
   Entities/                 # Product, Catalog, CatalogProduct
   Interfaces/               # IProductRepository (repository contracts)
 
+B2B.Commerce.Contracts      # No external dependencies — DTOs and request/response records
+  Products/                 # ProductDto, CreateProductRequest, UpdateProductRequest, UpdateProductPriceRequest
+  Catalogs/                 # CatalogDto, CreateCatalogRequest
+  Common/                   # PagedRequest, PagedResponse<T>, ErrorResponse (with static factory methods)
+
 B2B.Commerce.Infrastructure # Depends on Domain
-  Data/CommerceDbContext     # EF Core DbContext with Fluent API config
-  Data/CommerceDbContextFactory  # IDesignTimeDbContextFactory for ef CLI
-  Migrations/               # EF Core migrations
+  Data/CommerceDbContext          # EF Core DbContext with Fluent API config
+  Data/CommerceDbContextFactory   # IDesignTimeDbContextFactory for ef CLI
+  Migrations/                     # EF Core migrations
+  Repositories/ProductRepository  # IProductRepository implementation
 
-B2B.Commerce.Api            # Depends on Domain + Infrastructure
-  Program.cs                # Minimal API entry point (stub — endpoints added per brief)
+B2B.Commerce.Api            # Depends on Domain + Infrastructure + Contracts
+  Endpoints/ProductEndpoints      # 7 Minimal API endpoints, TypedResults, OpenAPI metadata
+  Mapping/ProductMappingExtensions # Domain ↔ DTO extension methods
+  Program.cs                      # DI registration, Swagger, endpoint mapping
 
-tests/B2B.Commerce.Tests    # Depends on Domain only
-  Domain/                   # Unit tests using xUnit + FluentAssertions
+tests/B2B.Commerce.Tests    # Depends on Domain + Contracts + Infrastructure + Api
+  Domain/                   # Unit tests for domain entities
+  Infrastructure/           # Repository unit tests (EF InMemory, isolated per test)
+  Integration/              # API integration tests (TestContainers PostgreSQL, per-test container)
 ```
 
 ## Domain Design Conventions
@@ -100,3 +110,4 @@ Each log documents: scope, what was done, decisions made (with rationale), verif
 | Brief | Date | Tag | Summary |
 |---|---|---|---|
 | [#01](/.claude/briefs/brief-01-2026-03-26.md) | 2026-03-26 | v0.1.0 | Project setup, domain entities, EF migrations |
+| [#02](/.claude/briefs/brief-02-2026-03-26.md) | 2026-03-26 | v0.2.0 | Contracts project, ProductRepository, 7 REST endpoints, TestContainers integration tests |
