@@ -1,3 +1,4 @@
+using B2B.Commerce.Api.Filters;
 using B2B.Commerce.Api.Mapping;
 using B2B.Commerce.Contracts.Common;
 using B2B.Commerce.Contracts.Products;
@@ -28,11 +29,13 @@ public static class ProductEndpoints
 
         group.MapPost("/", CreateProduct)
             .WithName("CreateProduct")
-            .WithSummary("Create a new product");
+            .WithSummary("Create a new product")
+            .AddEndpointFilter<ValidationFilter<CreateProductRequest>>();
 
         group.MapPut("/{id:guid}", UpdateProduct)
             .WithName("UpdateProduct")
-            .WithSummary("Update product details");
+            .WithSummary("Update product details")
+            .AddEndpointFilter<ValidationFilter<UpdateProductRequest>>();
 
         group.MapPatch("/{id:guid}/price", UpdateProductPrice)
             .WithName("UpdateProductPrice")

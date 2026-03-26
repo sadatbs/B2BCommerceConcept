@@ -24,4 +24,13 @@ public class Catalog
             CreatedAt = DateTime.UtcNow
         };
     }
+
+    public void UpdateDetails(string name, string? description)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Name is required", nameof(name));
+
+        Name = name.Trim();
+        Description = description?.Trim();
+    }
 }
