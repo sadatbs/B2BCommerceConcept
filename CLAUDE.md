@@ -112,3 +112,4 @@ Each log documents: scope, what was done, decisions made (with rationale), verif
 | [#01](/.claude/briefs/brief-01-2026-03-26.md) | 2026-03-26 | v0.1.0 | Project setup, domain entities, EF migrations |
 | [#02](/.claude/briefs/brief-02-2026-03-26.md) | 2026-03-26 | v0.2.0 | Contracts project, ProductRepository, 7 REST endpoints, TestContainers integration tests |
 | [#03](/.claude/briefs/brief-03-2026-03-26.md) | 2026-03-26 | v0.3.0 | Catalog endpoints, FluentValidation filters, ExceptionHandlingMiddleware |
+| [#04](/.claude/briefs/brief-04-2026-03-28.md) | 2026-03-28 | v0.4.0 | Cart, Order, domain events, Unit of Work, checkout flow |
