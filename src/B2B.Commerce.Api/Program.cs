@@ -1,8 +1,10 @@
 using B2B.Commerce.Api.Endpoints;
 using B2B.Commerce.Api.Middleware;
 using B2B.Commerce.Api.Validators;
+using B2B.Commerce.Domain.Events;
 using B2B.Commerce.Domain.Interfaces;
 using B2B.Commerce.Infrastructure.Data;
+using B2B.Commerce.Infrastructure.Events;
 using B2B.Commerce.Infrastructure.Repositories;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +30,14 @@ builder.Services.AddDbContext<CommerceDbContext>(options =>
 // Add Repositories
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICatalogRepository, CatalogRepository>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+
+// Unit of Work
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Event Dispatcher
+builder.Services.AddScoped<IEventDispatcher, InMemoryEventDispatcher>();
 
 // Add Validators
 builder.Services.AddValidatorsFromAssemblyContaining<CreateProductRequestValidator>();
@@ -49,6 +59,8 @@ app.UseHttpsRedirection();
 // Map endpoints
 app.MapProductEndpoints();
 app.MapCatalogEndpoints();
+app.MapCartEndpoints();
+app.MapOrderEndpoints();
 
 app.Run();
 

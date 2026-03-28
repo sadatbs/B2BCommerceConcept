@@ -1,4 +1,5 @@
 using B2B.Commerce.Domain.Entities;
+using B2B.Commerce.Infrastructure.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace B2B.Commerce.Infrastructure.Data;
@@ -8,11 +9,18 @@ public class CommerceDbContext : DbContext
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Catalog> Catalogs => Set<Catalog>();
     public DbSet<CatalogProduct> CatalogProducts => Set<CatalogProduct>();
+    public DbSet<Cart> Carts => Set<Cart>();
+    public DbSet<CartItem> CartItems => Set<CartItem>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
     public CommerceDbContext(DbContextOptions<CommerceDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
+        // Existing inline config (Products, Catalogs, CatalogProducts)
         modelBuilder.Entity<Product>(entity =>
         {
             entity.HasKey(p => p.Id);
@@ -41,5 +49,11 @@ public class CommerceDbContext : DbContext
                   .WithMany(p => p.CatalogProducts)
                   .HasForeignKey(cp => cp.ProductId);
         });
+
+        // New configuration classes
+        modelBuilder.ApplyConfiguration(new CartConfiguration());
+        modelBuilder.ApplyConfiguration(new CartItemConfiguration());
+        modelBuilder.ApplyConfiguration(new OrderConfiguration());
+        modelBuilder.ApplyConfiguration(new OrderItemConfiguration());
     }
 }
