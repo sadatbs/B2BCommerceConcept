@@ -202,4 +202,4 @@ Current test count: **131** (all passing).
 
 ## License
 
-MIT
+GPL-3.0 license
