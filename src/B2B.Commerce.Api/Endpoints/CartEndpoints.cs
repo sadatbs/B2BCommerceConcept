@@ -4,6 +4,7 @@ using B2B.Commerce.Contracts.Carts;
 using B2B.Commerce.Contracts.Common;
 using B2B.Commerce.Domain.Entities;
 using B2B.Commerce.Domain.Interfaces;
+using B2B.Commerce.Domain.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace B2B.Commerce.Api.Endpoints;
@@ -59,6 +60,7 @@ public static class CartEndpoints
     private static async Task<Results<Ok<CartDto>, NotFound<ErrorResponse>>> GetCart(
         Guid id,
         ICartRepository cartRepository,
+        IPricingService pricingService,
         CancellationToken cancellationToken)
     {
         var cart = await cartRepository.GetByIdWithItemsAsync(id, cancellationToken);
@@ -66,7 +68,7 @@ public static class CartEndpoints
         if (cart is null)
             return TypedResults.NotFound(ErrorResponse.NotFound("Cart", id.ToString()));
 
-        return TypedResults.Ok(cart.ToDto());
+        return TypedResults.Ok(await cart.ToDtoAsync(pricingService, cancellationToken));
     }
 
     private static async Task<Results<Ok<CartDto>, NotFound<ErrorResponse>>> AddToCart(
@@ -74,6 +76,7 @@ public static class CartEndpoints
         AddToCartRequest request,
         ICartRepository cartRepository,
         IProductRepository productRepository,
+        IPricingService pricingService,
         IUnitOfWork unitOfWork,
         CancellationToken cancellationToken)
     {
@@ -92,7 +95,7 @@ public static class CartEndpoints
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         cart = await cartRepository.GetByIdWithItemsAsync(id, cancellationToken);
-        return TypedResults.Ok(cart!.ToDto());
+        return TypedResults.Ok(await cart!.ToDtoAsync(pricingService, cancellationToken));
     }
 
     private static async Task<Results<Ok<CartDto>, NotFound<ErrorResponse>>> UpdateCartItem(
@@ -100,6 +103,7 @@ public static class CartEndpoints
         Guid productId,
         UpdateCartItemRequest request,
         ICartRepository cartRepository,
+        IPricingService pricingService,
         IUnitOfWork unitOfWork,
         CancellationToken cancellationToken)
     {
@@ -115,7 +119,7 @@ public static class CartEndpoints
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
             cart = await cartRepository.GetByIdWithItemsAsync(id, cancellationToken);
-            return TypedResults.Ok(cart!.ToDto());
+            return TypedResults.Ok(await cart!.ToDtoAsync(pricingService, cancellationToken));
         }
         catch (InvalidOperationException)
         {
@@ -127,6 +131,7 @@ public static class CartEndpoints
         Guid id,
         Guid productId,
         ICartRepository cartRepository,
+        IPricingService pricingService,
         IUnitOfWork unitOfWork,
         CancellationToken cancellationToken)
     {
@@ -142,7 +147,7 @@ public static class CartEndpoints
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
             cart = await cartRepository.GetByIdWithItemsAsync(id, cancellationToken);
-            return TypedResults.Ok(cart!.ToDto());
+            return TypedResults.Ok(await cart!.ToDtoAsync(pricingService, cancellationToken));
         }
         catch (InvalidOperationException)
         {
@@ -153,6 +158,7 @@ public static class CartEndpoints
     private static async Task<Results<Ok<CartDto>, NotFound<ErrorResponse>>> ClearCart(
         Guid id,
         ICartRepository cartRepository,
+        IPricingService pricingService,
         IUnitOfWork unitOfWork,
         CancellationToken cancellationToken)
     {
@@ -165,6 +171,6 @@ public static class CartEndpoints
         cartRepository.Update(cart);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return TypedResults.Ok(cart.ToDto());
+        return TypedResults.Ok(await cart.ToDtoAsync(pricingService, cancellationToken));
     }
 }
