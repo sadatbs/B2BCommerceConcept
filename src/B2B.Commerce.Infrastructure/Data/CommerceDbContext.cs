@@ -13,6 +13,10 @@ public class CommerceDbContext : DbContext
     public DbSet<CartItem> CartItems => Set<CartItem>();
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<Customer> Customers => Set<Customer>();
+    public DbSet<User> Users => Set<User>();
+    public DbSet<PriceTier> PriceTiers => Set<PriceTier>();
+    public DbSet<TierPrice> TierPrices => Set<TierPrice>();
 
     public CommerceDbContext(DbContextOptions<CommerceDbContext> options) : base(options) { }
 
@@ -55,5 +59,9 @@ public class CommerceDbContext : DbContext
         modelBuilder.ApplyConfiguration(new CartItemConfiguration());
         modelBuilder.ApplyConfiguration(new OrderConfiguration());
         modelBuilder.ApplyConfiguration(new OrderItemConfiguration());
+        modelBuilder.ApplyConfiguration(new CustomerConfiguration());
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new PriceTierConfiguration());
+        modelBuilder.ApplyConfiguration(new TierPriceConfiguration());
     }
 }
