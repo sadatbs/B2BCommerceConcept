@@ -17,6 +17,7 @@ public class CommerceDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<PriceTier> PriceTiers => Set<PriceTier>();
     public DbSet<TierPrice> TierPrices => Set<TierPrice>();
+    public DbSet<Invoice> Invoices => Set<Invoice>();
 
     public CommerceDbContext(DbContextOptions<CommerceDbContext> options) : base(options) { }
 
@@ -63,5 +64,6 @@ public class CommerceDbContext : DbContext
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new PriceTierConfiguration());
         modelBuilder.ApplyConfiguration(new TierPriceConfiguration());
+        modelBuilder.ApplyConfiguration(new InvoiceConfiguration());
     }
 }
