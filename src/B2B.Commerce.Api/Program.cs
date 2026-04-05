@@ -37,6 +37,7 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPriceTierRepository, PriceTierRepository>();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 
 // Unit of Work
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -71,6 +72,7 @@ app.MapCartEndpoints();
 app.MapOrderEndpoints();
 app.MapCustomerEndpoints();
 app.MapPriceTierEndpoints();
+app.MapInvoiceEndpoints();
 
 app.Run();
 
