@@ -113,3 +113,4 @@ Each log documents: scope, what was done, decisions made (with rationale), verif
 | [#02](/.claude/briefs/brief-02-2026-03-26.md) | 2026-03-26 | v0.2.0 | Contracts project, ProductRepository, 7 REST endpoints, TestContainers integration tests |
 | [#03](/.claude/briefs/brief-03-2026-03-26.md) | 2026-03-26 | v0.3.0 | Catalog endpoints, FluentValidation filters, ExceptionHandlingMiddleware |
 | [#04](/.claude/briefs/brief-04-2026-03-28.md) | 2026-03-28 | v0.4.0 | Cart, Order, domain events, Unit of Work, checkout flow |
+| [#05](/.claude/briefs/brief-05-2026-04-05.md) | 2026-04-05 | v0.5.0 | Customer, User, PriceTier entities, PricingService, contract pricing in cart |
