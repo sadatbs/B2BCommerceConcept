@@ -97,6 +97,11 @@ When adding new EF-related packages, pin to `9.0.x` — do **not** use the lates
 
 Feature branches follow `feature/NN-short-description`. Each implementation brief is a separate branch merged to `main` and tagged `vN.N.0`.
 
+## AI Skills & Automated Scaffolding
+
+When asked to scaffold a new domain entity or feature slice, you MUST read and strictly adhere to the guidelines established in `.agents/skills/clean-architecture-scaffolder/SKILL.md`.
+When asked to manage EF Core migrations, you MUST read and strictly adhere to `.agents/skills/ef-core-migration/SKILL.md`.
+
 ## Brief Logs
 
 After completing each implementation brief, create a log at:
@@ -114,3 +119,4 @@ Each log documents: scope, what was done, decisions made (with rationale), verif
 | [#03](/.claude/briefs/brief-03-2026-03-26.md) | 2026-03-26 | v0.3.0 | Catalog endpoints, FluentValidation filters, ExceptionHandlingMiddleware |
 | [#04](/.claude/briefs/brief-04-2026-03-28.md) | 2026-03-28 | v0.4.0 | Cart, Order, domain events, Unit of Work, checkout flow |
 | [#05](/.claude/briefs/brief-05-2026-04-05.md) | 2026-04-05 | v0.5.0 | Customer, User, PriceTier entities, PricingService, contract pricing in cart |
+| [#05A](/.claude/briefs/brief-05A-2026-04-12.md) | 2026-04-12 | v0.5.1 | Cart ownership per-user, Requisition workflow (Cart→Requisition→Order), User.BudgetLimit, remove direct POST /api/orders |
