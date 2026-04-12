@@ -274,7 +274,7 @@ public static class CustomerEndpoints
             ? parsedRole
             : UserRole.Buyer;
 
-        var user = User.Create(id, request.Email, request.FirstName, request.LastName, role);
+        var user = User.Create(id, request.Email, request.FirstName, request.LastName, role, request.BudgetLimit);
 
         await userRepository.AddAsync(user, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);

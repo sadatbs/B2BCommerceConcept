@@ -14,7 +14,9 @@ public class CartPricingTests : IntegrationTestBase
     public async Task Cart_WithoutCustomer_ShowsListPrice()
     {
         var product = await CreateProductAsync("CP-001", "Pricing Widget", 100m);
-        var cartResponse = await Client.PostAsJsonAsync("/api/carts", new CreateCartRequest());
+        // Use a non-existent CustomerId — pricing service will fall back to list price
+        var cartResponse = await Client.PostAsJsonAsync("/api/carts",
+            new CreateCartRequest { UserId = Guid.NewGuid(), CustomerId = Guid.NewGuid() });
         var cart = await cartResponse.Content.ReadFromJsonAsync<CartDto>();
 
         await Client.PostAsJsonAsync($"/api/carts/{cart!.Id}/items",
@@ -40,7 +42,7 @@ public class CartPricingTests : IntegrationTestBase
             new AssignPriceTierRequest { PriceTierId = tier.Id });
 
         var cartResponse = await Client.PostAsJsonAsync("/api/carts",
-            new CreateCartRequest { CustomerId = customer.Id });
+            new CreateCartRequest { UserId = Guid.NewGuid(), CustomerId = customer.Id });
         var cart = await cartResponse.Content.ReadFromJsonAsync<CartDto>();
 
         await Client.PostAsJsonAsync($"/api/carts/{cart!.Id}/items",
@@ -65,7 +67,7 @@ public class CartPricingTests : IntegrationTestBase
             new AssignPriceTierRequest { PriceTierId = tier.Id });
 
         var cartResponse = await Client.PostAsJsonAsync("/api/carts",
-            new CreateCartRequest { CustomerId = customer.Id });
+            new CreateCartRequest { UserId = Guid.NewGuid(), CustomerId = customer.Id });
         var cart = await cartResponse.Content.ReadFromJsonAsync<CartDto>();
 
         await Client.PostAsJsonAsync($"/api/carts/{cart!.Id}/items",
@@ -85,7 +87,7 @@ public class CartPricingTests : IntegrationTestBase
         // No tier assigned
 
         var cartResponse = await Client.PostAsJsonAsync("/api/carts",
-            new CreateCartRequest { CustomerId = customer.Id });
+            new CreateCartRequest { UserId = Guid.NewGuid(), CustomerId = customer.Id });
         var cart = await cartResponse.Content.ReadFromJsonAsync<CartDto>();
 
         await Client.PostAsJsonAsync($"/api/carts/{cart!.Id}/items",

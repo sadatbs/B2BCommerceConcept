@@ -16,6 +16,7 @@ public static class CartMappingExtensions
         return new CartDto
         {
             Id = cart.Id,
+            UserId = cart.UserId,
             CustomerId = cart.CustomerId,
             Items = items,
             Subtotal = items.Sum(i => i.LineTotal),
@@ -47,6 +48,7 @@ public static class CartMappingExtensions
         return new CartDto
         {
             Id = cart.Id,
+            UserId = cart.UserId,
             CustomerId = cart.CustomerId,
             Items = items,
             Subtotal = items.Sum(i => i.LineTotal),

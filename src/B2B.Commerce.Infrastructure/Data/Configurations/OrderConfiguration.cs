@@ -14,6 +14,9 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
 
         builder.Property(o => o.CustomerId);
 
+        builder.Property(o => o.RequisitionId);  // nullable FK — no cascade, just traceability
+        builder.HasIndex(o => o.RequisitionId);
+
         builder.Property(o => o.PurchaseOrderNumber)
             .HasMaxLength(100);
 

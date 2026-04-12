@@ -9,6 +9,7 @@ public class Order : AggregateRoot
 
     public Guid Id { get; private set; }
     public Guid? CustomerId { get; private set; }
+    public Guid? RequisitionId { get; private set; }  // traceability back to requisition
     public string? PurchaseOrderNumber { get; private set; }
     public OrderStatus Status { get; private set; }
     public decimal TotalAmount { get; private set; }
@@ -40,6 +41,40 @@ public class Order : AggregateRoot
                 ?? throw new InvalidOperationException($"Product {cartItem.ProductId} not found");
 
             var orderItem = OrderItem.CreateFromCartItem(order.Id, cartItem, product);
+            order._items.Add(orderItem);
+        }
+
+        order.TotalAmount = order._items.Sum(i => i.LineTotal);
+
+        order.AddDomainEvent(new OrderPlacedEvent
+        {
+            OrderId = order.Id,
+            CustomerId = order.CustomerId,
+            TotalAmount = order.TotalAmount,
+            ItemCount = order._items.Count
+        });
+
+        return order;
+    }
+
+    public static Order CreateFromRequisition(Requisition requisition)
+    {
+        if (requisition.Status != RequisitionStatus.Approved)
+            throw new InvalidOperationException(
+                "Cannot create Order from a Requisition that is not Approved");
+
+        var order = new Order
+        {
+            Id = Guid.NewGuid(),
+            CustomerId = requisition.CustomerId,
+            RequisitionId = requisition.Id,
+            Status = OrderStatus.Pending,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        foreach (var lineItem in requisition.LineItems)
+        {
+            var orderItem = OrderItem.CreateFromRequisitionLineItem(order.Id, lineItem);
             order._items.Add(orderItem);
         }
 

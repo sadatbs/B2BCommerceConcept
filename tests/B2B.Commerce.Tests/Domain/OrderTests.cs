@@ -10,7 +10,7 @@ public class OrderTests
     [Fact]
     public void CreateFromCart_ShouldCreateOrderWithItems()
     {
-        var cart = Cart.Create();
+        var cart = Cart.Create(Guid.NewGuid(), Guid.NewGuid());
         var productId = Guid.NewGuid();
         cart.AddItem(productId, 2);
 
@@ -30,7 +30,7 @@ public class OrderTests
     [Fact]
     public void CreateFromCart_EmptyCart_ShouldThrow()
     {
-        var cart = Cart.Create();
+        var cart = Cart.Create(Guid.NewGuid(), Guid.NewGuid());
 
         var act = () => Order.CreateFromCart(cart, _ => null);
 
@@ -41,7 +41,7 @@ public class OrderTests
     [Fact]
     public void CreateFromCart_ShouldRaiseOrderPlacedEvent()
     {
-        var cart = Cart.Create();
+        var cart = Cart.Create(Guid.NewGuid(), Guid.NewGuid());
         var productId = Guid.NewGuid();
         cart.AddItem(productId, 1);
 
@@ -106,7 +106,7 @@ public class OrderTests
 
     private static Order CreateTestOrder()
     {
-        var cart = Cart.Create();
+        var cart = Cart.Create(Guid.NewGuid(), Guid.NewGuid());
         var productId = Guid.NewGuid();
         cart.AddItem(productId, 1);
 

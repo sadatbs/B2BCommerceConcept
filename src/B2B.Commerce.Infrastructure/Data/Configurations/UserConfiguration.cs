@@ -28,6 +28,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasConversion<string>();
 
+        builder.Property(u => u.BudgetLimit)
+            .HasPrecision(18, 2);  // nullable
+
         builder.Property(u => u.IsActive)
             .IsRequired();
 
