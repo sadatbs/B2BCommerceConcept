@@ -5,7 +5,8 @@ public class Cart : AggregateRoot
     private readonly List<CartItem> _items = new();
 
     public Guid Id { get; private set; }
-    public Guid? CustomerId { get; private set; }
+    public Guid UserId { get; private set; }       // owner — individual buyer
+    public Guid CustomerId { get; private set; }   // company context (for pricing, not ownership)
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
 
@@ -13,11 +14,17 @@ public class Cart : AggregateRoot
 
     private Cart() { } // EF Core
 
-    public static Cart Create(Guid? customerId = null)
+    public static Cart Create(Guid userId, Guid customerId)
     {
+        if (userId == Guid.Empty)
+            throw new ArgumentException("UserId is required", nameof(userId));
+        if (customerId == Guid.Empty)
+            throw new ArgumentException("CustomerId is required", nameof(customerId));
+
         return new Cart
         {
             Id = Guid.NewGuid(),
+            UserId = userId,
             CustomerId = customerId,
             CreatedAt = DateTime.UtcNow
         };

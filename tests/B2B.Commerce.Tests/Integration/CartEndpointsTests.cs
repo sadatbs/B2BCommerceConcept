@@ -11,7 +11,8 @@ public class CartEndpointsTests : IntegrationTestBase
     [Fact]
     public async Task CreateCart_ReturnsCreated()
     {
-        var response = await Client.PostAsJsonAsync("/api/carts", new CreateCartRequest());
+        var response = await Client.PostAsJsonAsync("/api/carts",
+            new CreateCartRequest { UserId = Guid.NewGuid(), CustomerId = Guid.NewGuid() });
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         var cart = await response.Content.ReadFromJsonAsync<CartDto>();
@@ -22,7 +23,8 @@ public class CartEndpointsTests : IntegrationTestBase
     [Fact]
     public async Task AddToCart_ReturnsUpdatedCart()
     {
-        var cartResponse = await Client.PostAsJsonAsync("/api/carts", new CreateCartRequest());
+        var cartResponse = await Client.PostAsJsonAsync("/api/carts",
+            new CreateCartRequest { UserId = Guid.NewGuid(), CustomerId = Guid.NewGuid() });
         var cart = await cartResponse.Content.ReadFromJsonAsync<CartDto>();
 
         var product = await CreateProductAsync("CART-001", "Cart Test Product", 25.00m);
@@ -40,7 +42,8 @@ public class CartEndpointsTests : IntegrationTestBase
     [Fact]
     public async Task AddToCart_SameProductTwice_IncreasesQuantity()
     {
-        var cartResponse = await Client.PostAsJsonAsync("/api/carts", new CreateCartRequest());
+        var cartResponse = await Client.PostAsJsonAsync("/api/carts",
+            new CreateCartRequest { UserId = Guid.NewGuid(), CustomerId = Guid.NewGuid() });
         var cart = await cartResponse.Content.ReadFromJsonAsync<CartDto>();
         var product = await CreateProductAsync("CART-002", "Cart Test Product 2", 10.00m);
 
@@ -57,7 +60,8 @@ public class CartEndpointsTests : IntegrationTestBase
     [Fact]
     public async Task AddToCart_ZeroQuantity_ReturnsBadRequest()
     {
-        var cartResponse = await Client.PostAsJsonAsync("/api/carts", new CreateCartRequest());
+        var cartResponse = await Client.PostAsJsonAsync("/api/carts",
+            new CreateCartRequest { UserId = Guid.NewGuid(), CustomerId = Guid.NewGuid() });
         var cart = await cartResponse.Content.ReadFromJsonAsync<CartDto>();
         var product = await CreateProductAsync("CART-003", "Cart Test Product 3", 10.00m);
 
@@ -70,7 +74,8 @@ public class CartEndpointsTests : IntegrationTestBase
     [Fact]
     public async Task RemoveFromCart_ReturnsUpdatedCart()
     {
-        var cartResponse = await Client.PostAsJsonAsync("/api/carts", new CreateCartRequest());
+        var cartResponse = await Client.PostAsJsonAsync("/api/carts",
+            new CreateCartRequest { UserId = Guid.NewGuid(), CustomerId = Guid.NewGuid() });
         var cart = await cartResponse.Content.ReadFromJsonAsync<CartDto>();
         var product = await CreateProductAsync("CART-004", "Remove Test", 15.00m);
 
@@ -87,7 +92,8 @@ public class CartEndpointsTests : IntegrationTestBase
     [Fact]
     public async Task GetCart_ReturnsCartWithItems()
     {
-        var cartResponse = await Client.PostAsJsonAsync("/api/carts", new CreateCartRequest());
+        var cartResponse = await Client.PostAsJsonAsync("/api/carts",
+            new CreateCartRequest { UserId = Guid.NewGuid(), CustomerId = Guid.NewGuid() });
         var cart = await cartResponse.Content.ReadFromJsonAsync<CartDto>();
         var product = await CreateProductAsync("CART-005", "Get Test", 20.00m);
 

@@ -32,4 +32,18 @@ public class OrderItem
             Quantity = cartItem.Quantity
         };
     }
+
+    internal static OrderItem CreateFromRequisitionLineItem(Guid orderId, RequisitionLineItem lineItem)
+    {
+        return new OrderItem
+        {
+            Id = Guid.NewGuid(),
+            OrderId = orderId,
+            ProductId = lineItem.ProductId,
+            Sku = lineItem.Sku,
+            ProductName = lineItem.ProductName,
+            UnitPrice = lineItem.UnitPrice,   // already frozen in Requisition
+            Quantity = lineItem.Quantity
+        };
+    }
 }
