@@ -45,12 +45,12 @@ public static class CartEndpoints
     }
 
     private static async Task<Created<CartDto>> CreateCart(
-        CreateCartRequest? request,
+        CreateCartRequest request,
         ICartRepository cartRepository,
         IUnitOfWork unitOfWork,
         CancellationToken cancellationToken)
     {
-        var cart = Cart.Create(request?.CustomerId);
+        var cart = Cart.Create(request.UserId, request.CustomerId);
         await cartRepository.AddAsync(cart, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

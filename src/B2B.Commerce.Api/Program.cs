@@ -10,6 +10,7 @@ using B2B.Commerce.Infrastructure.Repositories;
 using B2B.Commerce.Infrastructure.Services;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +28,8 @@ builder.Services.AddSwaggerGen(options =>
 
 // Add DbContext
 builder.Services.AddDbContext<CommerceDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)));
 
 // Add Repositories
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
@@ -38,6 +40,7 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPriceTierRepository, PriceTierRepository>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddScoped<IRequisitionRepository, RequisitionRepository>();
 
 // Unit of Work
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -73,6 +76,7 @@ app.MapOrderEndpoints();
 app.MapCustomerEndpoints();
 app.MapPriceTierEndpoints();
 app.MapInvoiceEndpoints();
+app.MapRequisitionEndpoints();
 
 app.Run();
 

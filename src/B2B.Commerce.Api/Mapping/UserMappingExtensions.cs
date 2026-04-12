@@ -16,6 +16,7 @@ public static class UserMappingExtensions
             LastName = user.LastName,
             FullName = user.FullName,
             Role = user.Role.ToString(),
+            BudgetLimit = user.BudgetLimit,
             IsActive = user.IsActive,
             CreatedAt = user.CreatedAt
         };

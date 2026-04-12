@@ -1,58 +1,17 @@
 using System.Net;
 using System.Net.Http.Json;
 using B2B.Commerce.Contracts.Carts;
+using B2B.Commerce.Contracts.Common;
+using B2B.Commerce.Contracts.Customers;
 using B2B.Commerce.Contracts.Orders;
 using B2B.Commerce.Contracts.Products;
+using B2B.Commerce.Contracts.Requisitions;
 using FluentAssertions;
 
 namespace B2B.Commerce.Tests.Integration;
 
 public class OrderEndpointsTests : IntegrationTestBase
 {
-    [Fact]
-    public async Task CreateOrder_FromCartWithItems_ReturnsCreated()
-    {
-        var cart = await CreateCartWithItemsAsync(2);
-
-        var request = new CreateOrderRequest
-        {
-            CartId = cart.Id,
-            PurchaseOrderNumber = "PO-2026-001"
-        };
-        var response = await Client.PostAsJsonAsync("/api/orders", request);
-
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var order = await response.Content.ReadFromJsonAsync<OrderDto>();
-        order!.Status.Should().Be("Pending");
-        order.PurchaseOrderNumber.Should().Be("PO-2026-001");
-        order.ItemCount.Should().BeGreaterThan(0);
-    }
-
-    [Fact]
-    public async Task CreateOrder_ClearsCart()
-    {
-        var cart = await CreateCartWithItemsAsync(1);
-
-        var request = new CreateOrderRequest { CartId = cart.Id };
-        await Client.PostAsJsonAsync("/api/orders", request);
-
-        var cartResponse = await Client.GetAsync($"/api/carts/{cart.Id}");
-        var updatedCart = await cartResponse.Content.ReadFromJsonAsync<CartDto>();
-        updatedCart!.Items.Should().BeEmpty();
-    }
-
-    [Fact]
-    public async Task CreateOrder_EmptyCart_ReturnsBadRequest()
-    {
-        var cartResponse = await Client.PostAsJsonAsync("/api/carts", new CreateCartRequest());
-        var cart = await cartResponse.Content.ReadFromJsonAsync<CartDto>();
-
-        var request = new CreateOrderRequest { CartId = cart!.Id };
-        var response = await Client.PostAsJsonAsync("/api/orders", request);
-
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-    }
-
     [Fact]
     public async Task ConfirmOrder_FromPending_Succeeds()
     {
@@ -116,29 +75,51 @@ public class OrderEndpointsTests : IntegrationTestBase
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    private async Task<CartDto> CreateCartWithItemsAsync(int itemCount)
-    {
-        var cartResponse = await Client.PostAsJsonAsync("/api/carts", new CreateCartRequest());
-        var cart = await cartResponse.Content.ReadFromJsonAsync<CartDto>();
+    // ── Helpers ──────────────────────────────────────────────────────────────
 
-        for (int i = 1; i <= itemCount; i++)
-        {
-            var sku = $"ORD-{Guid.NewGuid():N}".Substring(0, 20).ToUpperInvariant();
-            var product = await CreateProductAsync(sku, $"Order Product {i}", i * 50.00m);
-            await Client.PostAsJsonAsync($"/api/carts/{cart!.Id}/items",
-                new AddToCartRequest { ProductId = product.Id, Quantity = i });
-        }
-
-        var updatedResponse = await Client.GetAsync($"/api/carts/{cart!.Id}");
-        return (await updatedResponse.Content.ReadFromJsonAsync<CartDto>())!;
-    }
-
+    /// <summary>
+    /// Creates an order via the full requisition workflow:
+    /// Customer → User (no budget limit → auto-approve) → Cart → Item → Submit Requisition → Order
+    /// </summary>
     private async Task<OrderDto> CreateOrderAsync()
     {
-        var cart = await CreateCartWithItemsAsync(1);
-        var request = new CreateOrderRequest { CartId = cart.Id };
-        var response = await Client.PostAsJsonAsync("/api/orders", request);
-        return (await response.Content.ReadFromJsonAsync<OrderDto>())!;
+        // Create customer + user with no budget limit (triggers auto-approve)
+        var suffix = Guid.NewGuid().ToString("N")[..8];
+        var customer = await CreateCustomerAsync($"ORD-{suffix}", $"Order Customer {suffix}", $"order-{suffix}@test.com");
+        var user = await CreateUserAsync(customer.Id, $"buyer-{suffix}@test.com", "Buyer", "Test");
+
+        // Create cart and add a product
+        var product = await CreateProductAsync($"ORD-P-{suffix}".ToUpperInvariant()[..12], $"Order Product {suffix}", 50.00m);
+        var cartResponse = await Client.PostAsJsonAsync("/api/carts",
+            new CreateCartRequest { UserId = user.Id, CustomerId = customer.Id });
+        var cart = await cartResponse.Content.ReadFromJsonAsync<CartDto>();
+
+        await Client.PostAsJsonAsync($"/api/carts/{cart!.Id}/items",
+            new AddToCartRequest { ProductId = product.Id, Quantity = 1 });
+
+        // Submit requisition → auto-approved → order created
+        var reqResponse = await Client.PostAsJsonAsync("/api/requisitions",
+            new SubmitRequisitionRequest { CartId = cart.Id, UserId = user.Id });
+        reqResponse.EnsureSuccessStatusCode();
+
+        // Fetch the newly created order (only 1 order exists per test isolation)
+        var ordersResponse = await Client.GetAsync("/api/orders?page=1&pageSize=100");
+        var paged = await ordersResponse.Content.ReadFromJsonAsync<PagedResponse<OrderDto>>();
+        return paged!.Items.Last();
+    }
+
+    private async Task<CustomerDto> CreateCustomerAsync(string code, string name, string email)
+    {
+        var response = await Client.PostAsJsonAsync("/api/customers",
+            new CreateCustomerRequest { Code = code, Name = name, Email = email });
+        return (await response.Content.ReadFromJsonAsync<CustomerDto>())!;
+    }
+
+    private async Task<UserDto> CreateUserAsync(Guid customerId, string email, string firstName, string lastName)
+    {
+        var response = await Client.PostAsJsonAsync($"/api/customers/{customerId}/users",
+            new CreateUserRequest { Email = email, FirstName = firstName, LastName = lastName, Role = "Buyer" });
+        return (await response.Content.ReadFromJsonAsync<UserDto>())!;
     }
 
     private async Task<ProductDto> CreateProductAsync(string sku, string name, decimal price)

@@ -9,6 +9,7 @@ public record UserDto
     public required string LastName { get; init; }
     public required string FullName { get; init; }
     public required string Role { get; init; }
+    public decimal? BudgetLimit { get; init; }
     public bool IsActive { get; init; }
     public required DateTime CreatedAt { get; init; }
 }

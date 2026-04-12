@@ -12,7 +12,11 @@ public class CartConfiguration : IEntityTypeConfiguration<Cart>
 
         builder.HasKey(c => c.Id);
 
-        builder.Property(c => c.CustomerId);
+        builder.Property(c => c.UserId)
+            .IsRequired();
+
+        builder.Property(c => c.CustomerId)
+            .IsRequired();
 
         builder.Property(c => c.CreatedAt)
             .IsRequired();
@@ -24,15 +28,15 @@ public class CartConfiguration : IEntityTypeConfiguration<Cart>
             .HasForeignKey(i => i.CartId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Items property returns _items.AsReadOnly() — EF cannot write to a ReadOnlyCollection.
-        // UsePropertyAccessMode(Field) forces EF to always use _items directly for all
-        // access (loading, fixup, change detection), bypassing the read-only wrapper.
         builder.Navigation(c => c.Items)
             .HasField("_items")
             .UsePropertyAccessMode(PropertyAccessMode.Field);
 
-        builder.HasIndex(c => c.CustomerId)
-            .HasFilter("\"CustomerId\" IS NOT NULL");
+        // One active cart per user (not per customer)
+        builder.HasIndex(c => c.UserId)
+            .IsUnique();
+
+        builder.HasIndex(c => c.CustomerId);
 
         builder.Ignore(c => c.DomainEvents);
     }

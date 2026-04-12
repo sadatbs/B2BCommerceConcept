@@ -18,6 +18,8 @@ public class CommerceDbContext : DbContext
     public DbSet<PriceTier> PriceTiers => Set<PriceTier>();
     public DbSet<TierPrice> TierPrices => Set<TierPrice>();
     public DbSet<Invoice> Invoices => Set<Invoice>();
+    public DbSet<Requisition> Requisitions => Set<Requisition>();
+    public DbSet<RequisitionLineItem> RequisitionLineItems => Set<RequisitionLineItem>();
 
     public CommerceDbContext(DbContextOptions<CommerceDbContext> options) : base(options) { }
 
@@ -65,5 +67,7 @@ public class CommerceDbContext : DbContext
         modelBuilder.ApplyConfiguration(new PriceTierConfiguration());
         modelBuilder.ApplyConfiguration(new TierPriceConfiguration());
         modelBuilder.ApplyConfiguration(new InvoiceConfiguration());
+        modelBuilder.ApplyConfiguration(new RequisitionConfiguration());
+        modelBuilder.ApplyConfiguration(new RequisitionLineItemConfiguration());
     }
 }

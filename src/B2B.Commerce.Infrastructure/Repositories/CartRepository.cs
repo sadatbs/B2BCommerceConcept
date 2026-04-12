@@ -28,12 +28,12 @@ public class CartRepository : ICartRepository
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
 
-    public async Task<Cart?> GetByCustomerIdAsync(Guid customerId, CancellationToken cancellationToken = default)
+    public async Task<Cart?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         return await _context.Carts
             .Include(c => c.Items)
                 .ThenInclude(i => i.Product)
-            .FirstOrDefaultAsync(c => c.CustomerId == customerId, cancellationToken);
+            .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
     }
 
     public async Task<Cart> AddAsync(Cart cart, CancellationToken cancellationToken = default)

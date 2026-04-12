@@ -10,6 +10,7 @@ public class User
     public string FirstName { get; private set; } = string.Empty;
     public string LastName { get; private set; } = string.Empty;
     public UserRole Role { get; private set; }
+    public decimal? BudgetLimit { get; private set; }  // null = no limit
     public bool IsActive { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
@@ -26,7 +27,8 @@ public class User
         string email,
         string firstName,
         string lastName,
-        UserRole role = UserRole.Buyer)
+        UserRole role = UserRole.Buyer,
+        decimal? budgetLimit = null)
     {
         if (string.IsNullOrWhiteSpace(email))
             throw new ArgumentException("Email is required", nameof(email));
@@ -34,6 +36,8 @@ public class User
             throw new ArgumentException("First name is required", nameof(firstName));
         if (string.IsNullOrWhiteSpace(lastName))
             throw new ArgumentException("Last name is required", nameof(lastName));
+        if (budgetLimit.HasValue && budgetLimit.Value < 0)
+            throw new ArgumentException("Budget limit cannot be negative", nameof(budgetLimit));
 
         return new User
         {
@@ -43,9 +47,18 @@ public class User
             FirstName = firstName.Trim(),
             LastName = lastName.Trim(),
             Role = role,
+            BudgetLimit = budgetLimit,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };
+    }
+
+    public void SetBudgetLimit(decimal? limit)
+    {
+        if (limit.HasValue && limit.Value < 0)
+            throw new ArgumentException("Budget limit cannot be negative", nameof(limit));
+        BudgetLimit = limit;
+        UpdatedAt = DateTime.UtcNow;
     }
 
     public void UpdateDetails(string firstName, string lastName, UserRole role)

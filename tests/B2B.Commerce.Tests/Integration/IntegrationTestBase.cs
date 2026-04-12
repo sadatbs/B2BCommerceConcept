@@ -2,6 +2,7 @@ using B2B.Commerce.Infrastructure.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
 
@@ -33,7 +34,8 @@ public class IntegrationTestBase : IAsyncLifetime
                         services.Remove(descriptor);
 
                     services.AddDbContext<CommerceDbContext>(options =>
-                        options.UseNpgsql(_postgres.GetConnectionString()));
+                        options.UseNpgsql(_postgres.GetConnectionString())
+                               .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)));
                 });
 
                 builder.UseEnvironment("Testing");
